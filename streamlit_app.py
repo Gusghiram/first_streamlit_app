@@ -1,6 +1,7 @@
 import streamlit
 import pandas as pd
 import snowflake.connector
+from urllib.error import URLError
 
 my_fruit_list = pd.read_csv('https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt')
 my_fruit_list.set_index('Fruit', inplace = True)
@@ -33,6 +34,7 @@ fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_c
 fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
 # write your own comment - what does this do?
 streamlit.dataframe(fruityvice_normalized)
+streamlit.stop()
 
 #Snowflake
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
@@ -44,3 +46,5 @@ streamlit.dataframe(my_data_rows)
 
 second_choice = streamlit.text_input("What fruit would you like to add?","jackfruit")
 streamlit.write("Thanks for adding ", second_choice)
+
+my_cur.execute("insert into fruit_load_list values ('from streamlit')")
